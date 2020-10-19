@@ -327,8 +327,11 @@ inline void debug_Init() {
 // const int block_size = 320;
 
 const int MXN = 100005;
-int n, q, s, k;
-int d[MXN], nl[MXN], nr[MXN], sk[MXN];
+const int LN = 21;
+int n, q, s, k, root;
+int d[MXN], nl[MXN], nr[MXN], sk[MXN], sz[MXN];
+vector<int> g[MXN];
+int f[MXN][LN];
 void initLR() {
     sk[0] = 0;
     int idx = 0;
@@ -347,26 +350,86 @@ void initLR() {
         nr[i] = sk[idx];
         sk[++idx] = i;
     }
+    //g[1].push_back(0);
+    for (int i = 1; i < n; ++i) {
+        int l = nl[i], r = nr[i];
+        //debug(i, l, r, d[l], d[r]);
+        if (d[l] < d[r]) {
+            f[i][0] = l;
+            g[l].push_back(i);
+        } else if (d[l] > d[r]) {
+            f[i][0] = r;
+            g[r].push_back(i);
+        }
+    }
+    f[n][0] = n - 1;
+    g[n - 1].push_back(n);
 }
-ll solve() {
-    return 0;
+void buildTree(int cur = root) {
+    sz[cur] = 1;
+    if (cur == root)
+        for (int i = 0; i < LN; ++i)
+            f[cur][i] = 0;
+    else
+        for (int i = 1; i < LN; ++i)
+            f[cur][i] = f[f[cur][i - 1]][i - 1];
+    vector<int> &sons = g[cur];
+    for (int &son : sons) {
+        buildTree(son);
+        sz[cur] += sz[son];
+    }
+}
+int findFirst(int x, int k) {
+    if (sz[x] >= k)
+        return x;
+    for (int j = 20; j >= 0; --j)
+        if (f[x][j] && sz[f[x][j]] < k) {
+            x = f[x][j];
+        }
+    return f[x][0];
+}
+int solve() {
+    int s, k;
+    read(s, k);
+    if (k == 1)
+        return s;
+    --k;
+    int x = d[s - 1] < d[s] ? s - 1 : s + 1;
+    if (sz[x] >= k) {
+        if (x < s)
+            return s - k;
+        return s + k;
+    }
+    int y = findFirst(x, k);
+    // if (k == 4 && s == 1)
+    //     debug(x, y, g[y][0], sz[g[y][0]]);
+    if (sz[s] > sz[y])
+        k--;
+    if (x < y)
+        return y + k - sz[g[y][0]];
+    return y - (k - sz[g[y].back()]);
 }
 inline void printAns(int caseNum) {
     printf("Case #%d: ", caseNum);
     read(n, q);
     d[0] = d[n] = INT_MAX;
-    for (int i = 1; i < n; ++i)
+    int cm = 0;
+    for (int i = 1; i < n; ++i) {
+        g[i].clear();
         read(d[i]);
+        if (d[i] > cm)
+            cm = d[i], root = i;
+    }
+    memset(f, 0, sizeof f);
     initLR();
+
+    buildTree();
     while (q--)
         printf("%d ", solve());
     printf("\n");
 }
 int main() {
     debug_Init();
-    //ios::sync_with_stdio(0);
-    //cin.tie(0);
-    //cout.tie(0);
     int T;
     read(T);
     for (int i = 0; i < T;)

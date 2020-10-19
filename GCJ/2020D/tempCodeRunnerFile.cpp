@@ -1,1 +1,1 @@
-path.pop_back();
+memset(f, 0, sizeof f);
