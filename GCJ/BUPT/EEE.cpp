@@ -2,14 +2,13 @@
  * @Author      :vimday
  * @Desc        :
  * @Url         :
- * @File Name   :B_High_Building.cpp
- * @Created Time:2020-10-20 16:08:44
+ * @File Name   :EEE.cpp
+ * @Created Time:2020-10-25 14:31:33
  * @E-mail      :lwftx@outlook.com
  * @GitHub      :https://github.com/vimday
  */
 #include <bits/stdc++.h>
 using namespace std;
-
 #define PB push_back
 #define PF push_front
 #define LB lower_bound
@@ -43,48 +42,6 @@ typedef double db;
 typedef long double ld;
 typedef vector<ll> VLL;
 typedef vector<int> VI;
-
-namespace HELP {
-ull twop(ll x) { return 1ULL << x; }
-ll MOD(ll a, ll m) {
-    a %= m;
-    if (a < 0) a += m;
-    return a;
-}
-ll inverse(ll a, ll m) {
-    a = MOD(a, m);
-    if (a <= 1) return a;
-    return MOD((1 - inverse(m, a) * m) / a, m);
-}
-template <typename T>
-T sqr(T x) { return x * x; }
-ll gcd(ll a, ll b) {
-    while (b != 0) {
-        a %= b;
-        swap(a, b);
-    }
-    return abs(a);
-}
-ll fast(ll a, ll b, ll mod) {
-    if (b < 0) a = inverse(a, mod), b = -b;
-    ll ans = 1;
-    while (b) {
-        if (b & 1) {
-            b--;
-            ans = ans * a % mod;
-        } else {
-            a = a * a % mod;
-            b /= 2;
-        }
-    }
-    return ans % mod;
-}
-template <typename T, typename S>
-inline bool upmin(T &a, const S &b) { return a > b ? a = b, 1 : 0; }
-template <typename T, typename S>
-inline bool upmax(T &a, const S &b) { return a < b ? a = b, 1 : 0; }
-};  // namespace HELP
-
 namespace IO {
 bool REOF = 1;  //为0表示文件结尾
 inline char nc() {
@@ -180,58 +137,46 @@ ostream &operator<<(ostream &os, pair<L, R> P) {
 #endif
 }  // namespace IO
 using namespace IO;
-using namespace HELP;
 inline void debug_Init() {
 #ifdef LOCAL
     freopen("E:\\Code\\HAPPYLEARNING\\in.txt", "r", stdin);
     freopen("E:\\Code\\HAPPYLEARNING\\out.txt", "w", stdout);
 #endif
 }
-const char *IMPOSSIBLE = "IMPOSSIBLE";
-void solve() {
-    int n, a, b, c;
-    read(n, a, b, c);
-    // 数组的以头部开头的最长递增子序列的长度为 a
-    // 以尾部开头的最长递增子序列的长度为 b
-    // 并且有 c 个元素同时位于这两个序列
-    vector<int> res(n);
-    if (a + b - c > n) {
-        printf(IMPOSSIBLE);
-        return;
+const ll md = 1e9;
+const char *zag = "Rilly";
+const char *coffee = "Northy";
+class Solution {
+public:
+    void solve(int caseNum) {
+        ll m, ca, cb;
+        read(m, ca, cb);
+        ll ra = 0, rb = 0;
+        for (int i = 0; i < m; ++i) {
+            ll a, b;
+            read(a, b);
+            ll ad = min(ca, ca * a / md);
+            ll bd = min(cb, cb * b / md);
+            ra += ad;
+            rb += bd;
+            ca -= ad;
+            cb -= bd;
+            if (ca == 0 && cb == 0)
+                break;
+        }
+        printf("%s\n", ra > rb ? zag : coffee);
     }
-    if (a == b && b == c && c < min(n, 2)) {
-        printf(IMPOSSIBLE);
-        return;
-    }
-    bool rev = false;
-    if (a > b)
-        swap(a, b), rev = true;
-    int idx = 0;
-    int ra = a - c, rb = b - c;
-    for (int i = 0; i < ra; ++i)
-        res[idx++] = n - 1;
-    res[idx++] = n;
-    for (int i = 0; i < n - ra - rb - c; ++i)
-        res[idx++] = 1;
-    for (int i = 0; i < c - 1; ++i)
-        res[idx++] = n;
-    for (int i = 0; i < rb; ++i)
-        res[idx++] = n - 1;
-    if (rev)
-        reverse(res.begin(), res.end());
-    for (int &i : res)
-        printf("%d ", i);
-}
-inline void printAns(int caseNum) {
-    printf("Case #%d: ", caseNum);
-    solve();
-    printf("\n");
-}
+};
 int main() {
     debug_Init();
+    ios::sync_with_stdio(0);
+    cin.tie(0);
+    cout.tie(0);
     int T;
     read(T);
-    for (int i = 0; i < T;)
-        printAns(++i);
+    Solution solution = Solution();
+    for (int i = 0; i < T;) {
+        solution.solve(++i);
+    }
     return 0;
 }

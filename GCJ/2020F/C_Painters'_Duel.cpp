@@ -2,14 +2,13 @@
  * @Author      :vimday
  * @Desc        :
  * @Url         :
- * @File Name   :B_High_Building.cpp
- * @Created Time:2020-10-20 16:08:44
+ * @File Name   :C_Painters'_Duel.cpp
+ * @Created Time:2020-10-24 22:27:34
  * @E-mail      :lwftx@outlook.com
  * @GitHub      :https://github.com/vimday
  */
 #include <bits/stdc++.h>
 using namespace std;
-
 #define PB push_back
 #define PF push_front
 #define LB lower_bound
@@ -43,48 +42,6 @@ typedef double db;
 typedef long double ld;
 typedef vector<ll> VLL;
 typedef vector<int> VI;
-
-namespace HELP {
-ull twop(ll x) { return 1ULL << x; }
-ll MOD(ll a, ll m) {
-    a %= m;
-    if (a < 0) a += m;
-    return a;
-}
-ll inverse(ll a, ll m) {
-    a = MOD(a, m);
-    if (a <= 1) return a;
-    return MOD((1 - inverse(m, a) * m) / a, m);
-}
-template <typename T>
-T sqr(T x) { return x * x; }
-ll gcd(ll a, ll b) {
-    while (b != 0) {
-        a %= b;
-        swap(a, b);
-    }
-    return abs(a);
-}
-ll fast(ll a, ll b, ll mod) {
-    if (b < 0) a = inverse(a, mod), b = -b;
-    ll ans = 1;
-    while (b) {
-        if (b & 1) {
-            b--;
-            ans = ans * a % mod;
-        } else {
-            a = a * a % mod;
-            b /= 2;
-        }
-    }
-    return ans % mod;
-}
-template <typename T, typename S>
-inline bool upmin(T &a, const S &b) { return a > b ? a = b, 1 : 0; }
-template <typename T, typename S>
-inline bool upmax(T &a, const S &b) { return a < b ? a = b, 1 : 0; }
-};  // namespace HELP
-
 namespace IO {
 bool REOF = 1;  //为0表示文件结尾
 inline char nc() {
@@ -180,58 +137,57 @@ ostream &operator<<(ostream &os, pair<L, R> P) {
 #endif
 }  // namespace IO
 using namespace IO;
-using namespace HELP;
 inline void debug_Init() {
 #ifdef LOCAL
     freopen("E:\\Code\\HAPPYLEARNING\\in.txt", "r", stdin);
     freopen("E:\\Code\\HAPPYLEARNING\\out.txt", "w", stdout);
 #endif
 }
-const char *IMPOSSIBLE = "IMPOSSIBLE";
-void solve() {
-    int n, a, b, c;
-    read(n, a, b, c);
-    // 数组的以头部开头的最长递增子序列的长度为 a
-    // 以尾部开头的最长递增子序列的长度为 b
-    // 并且有 c 个元素同时位于这两个序列
-    vector<int> res(n);
-    if (a + b - c > n) {
-        printf(IMPOSSIBLE);
-        return;
+// int dx[4] = { 0, 1, 0, -1 };
+// int dx[8] = { 1, 0, -1, 1, -1, 1, 0, -1 };
+// int dy[4] = { 1, 0, -1, 0 };
+// int dy[8] = { 1, 1, 1, 0, 0, -1, -1, -1 };
+
+const ll mod = 1e9 + 7;
+const ll inf = 1e9 + 7;
+const ld eps = 1e-9;
+const db PI = atan(1) * 4;
+const int block_size = 320;
+class Solution {
+    int n, ar, ac, br, bc, c;
+    vector<vector<int>> g;
+
+public:
+    bool inArea(int x, int y) {
+        return x >= 0 && x <= n && y >= 0 && y < g[x].size();
     }
-    if (a == b && b == c && c < min(n, 2)) {
-        printf(IMPOSSIBLE);
-        return;
+    int dfs(int ax, int ay, int bx, int by) {
     }
-    bool rev = false;
-    if (a > b)
-        swap(a, b), rev = true;
-    int idx = 0;
-    int ra = a - c, rb = b - c;
-    for (int i = 0; i < ra; ++i)
-        res[idx++] = n - 1;
-    res[idx++] = n;
-    for (int i = 0; i < n - ra - rb - c; ++i)
-        res[idx++] = 1;
-    for (int i = 0; i < c - 1; ++i)
-        res[idx++] = n;
-    for (int i = 0; i < rb; ++i)
-        res[idx++] = n - 1;
-    if (rev)
-        reverse(res.begin(), res.end());
-    for (int &i : res)
-        printf("%d ", i);
-}
-inline void printAns(int caseNum) {
-    printf("Case #%d: ", caseNum);
-    solve();
-    printf("\n");
-}
+    void solve(int caseNum) {
+        read(n, ar, ac, br, bc, c);
+        g.clear();
+        g.resize(n + 1);
+        for (int i = 1; i <= n; ++i) {
+            g[i].resize(i << 1);
+        }
+        for (int i = 0; i < c; ++i) {
+            int _r, _c;
+            read(_r, _c);
+            g[_r][_c] = -1;
+        }
+        printf("Case #%d: %d\n", caseNum, dfs(ar, ac, br, bc));
+    }
+};
 int main() {
     debug_Init();
+    ios::sync_with_stdio(0);
+    cin.tie(0);
+    cout.tie(0);
     int T;
     read(T);
-    for (int i = 0; i < T;)
-        printAns(++i);
+    for (int i = 0; i < T;) {
+        Solution solution = Solution();
+        solution.solve(++i);
+    }
     return 0;
 }
