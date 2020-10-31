@@ -159,9 +159,60 @@ class Solution {
 
 public:
     bool inArea(int x, int y) {
-        return x >= 0 && x <= n && y >= 0 && y < g[x].size();
+        return x > 0 && x <= n && y > 0 && y < g[x].size();
+    }
+    vector<array<int, 2>> getNextPos(int x, int y) {
+        vector<array<int, 2>> res;
+        if (inArea(x, y - 1) && g[x][y - 1] != -1)
+            res.push_back({x, y - 1});
+        if (inArea(x, y + 1) && g[x][y + 1] != -1)
+            res.push_back({x, y + 1});
+        if (y & 1 && inArea(x + 1, y + 1) && g[x + 1][y + 1] != -1)
+            res.push_back({x + 1, y + 1});
+        if ((y & 1) == 0 && inArea(x - 1, y - 1) && g[x - 1][y - 1] != -1)
+            res.push_back({x - 1, y - 1});
+        return res;
     }
     int dfs(int ax, int ay, int bx, int by) {
+        g[ax][ay] = g[bx][by] = -1;
+        auto na = getNextPos(ax, ay);
+        int mx = INT_MIN;
+        if (na.size()) {
+            for (auto &p : na) {
+                int nx = p[0], ny = p[1];
+                g[nx][ny] = -1;
+                int mn = INT_MAX;
+                auto nb = getNextPos(bx, by);
+                if (nb.size()) {
+                    for (auto &bp : nb) {
+                        g[bp[0]][bp[1]] = -1;
+                        mn = min(mn, dfs(nx, ny, bp[0], bp[1]));
+                        g[bp[0]][bp[1]] = 0;
+                    }
+                } else {
+                    //b gg
+                    mn = min(mn, 1 + dfs(nx, ny, bx, by));
+                }
+                mx = max(mx, mn);
+                g[nx][ny] = 0;
+            }
+            return mx;
+        }
+        // a gg
+        auto nb = getNextPos(bx, by);
+        int mn = INT_MAX;
+        if (nb.size()) {
+            for (auto &p : nb) {
+                int nx = p[0], ny = p[1];
+                g[nx][ny] = -1;
+                mn = min(mn, -1 + dfs(ax, ay, nx, ny));
+                g[nx][ny] = 0;
+            }
+            mx = max(mx, mn);
+            return mx;
+        }
+        // a b gg
+        return 0;
     }
     void solve(int caseNum) {
         read(n, ar, ac, br, bc, c);
@@ -185,6 +236,7 @@ int main() {
     cout.tie(0);
     int T;
     read(T);
+
     for (int i = 0; i < T;) {
         Solution solution = Solution();
         solution.solve(++i);
