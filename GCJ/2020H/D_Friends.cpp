@@ -2,8 +2,8 @@
  * @Author      :vimday
  * @Desc        :
  * @Url         :
- * @File Name   :C_Rugby.cpp
- * @Created Time:2020-11-17 22:23:43
+ * @File Name   :D_Friends.cpp
+ * @Created Time:2020-11-18 23:08:05
  * @E-mail      :lwftx@outlook.com
  * @GitHub      :https://github.com/vimday
  */
@@ -149,33 +149,59 @@ inline void debug_Init() {
 // int dy[8] = { 1, 1, 1, 0, 0, -1, -1, -1 };
 
 const ll mod = 1e9 + 7;
-const ll inf = 1e9 + 7;
+const int inf = 0x3f3f3f3f;
 const ld eps = 1e-9;
 const db PI = atan(1) * 4;
 const int block_size = 320;
-const int MXN = 100005;
 class Solution {
-    ll vx[MXN], vy[MXN];
-
 public:
     void solve(int caseNum) {
-        ll res = 0;
-        int n;
-        read(n);
-        for (int i = 0; i < n; ++i)
-            read(vx[i], vy[i]);
-        sort(vx, vx + n);
-        sort(vy, vy + n);
-        int i = 0;
-        while (i < n)
-            vx[i] -= i, ++i;
-        sort(vx, vx + n);
-        ll mx = vx[n >> 1], my = vy[n >> 1];
-        for (int i = 0; i < n; ++i)
-            res += abs(vx[i] - mx) + abs(vy[i] - my);
-        printf("Case #%d: %lld\n", caseNum, res);
+        printf("Case #%d: ", caseNum);
+        int n, q;
+        read(n, q);
+        vector<vector<bool>> vb(n, vector<bool>(26, false));
+
+        for (int i = 0; i < n; ++i) {
+            char t[26];
+            read_str(t);
+            //debug(t);
+            int j = 0;
+            while (t[j] != '\0')
+                vb[i][t[j] - 'A'] = true, j++;
+        }
+        int dp[26][26];
+        memset(dp, 0x3f, sizeof dp);
+        for (int i = 0; i < 26; ++i)
+            dp[i][i] = 0;
+        for (vector<bool> &v : vb)
+            for (int i = 0; i < 26; ++i)
+                for (int j = 0; j < 26; ++j)
+                    if (v[i] && v[j] && i != j)
+                        dp[i][j] = 1;
+
+        // floyd
+        for (int k = 0; k < 26; ++k)
+            for (int i = 0; i < 26; ++i)
+                for (int j = 0; j < 26; ++j)
+                    dp[i][j] = min(dp[i][j], dp[i][k] + dp[k][j]);
+        while (q--) {
+            int a, b;
+            read(a, b);
+            a--;
+            b--;
+            int res = inf;
+            for (int i = 0; i < 26; ++i)
+                for (int j = 0; j < 26; ++j)
+                    if (vb[a][i] && vb[b][j]) {
+                        //debug(dp[i][j]);
+                        res = min(res, dp[i][j]);
+                    }
+            printf("%d ", res < inf ? res + 2 : -1);
+        }
+        printf("\n");
     }
 };
+
 int main() {
     debug_Init();
     ios::sync_with_stdio(0);
